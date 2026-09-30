@@ -1,13 +1,1 @@
-node_modules/
-.expo/
-dist/
-build/
-.env
-.env.local
-.env.*.local
-.openmuse/
-apps/mobile/ios/
-apps/mobile/android/
 .DS_Store
-*.tsbuildinfo
-artifacts/

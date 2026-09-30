@@ -1,246 +1,174 @@
-  <div align="center">
+<div align="center">
 
-# OpenMuse
+# OpenMuse on Render
 
-**A personal agent with a browser, terminal, files, and work that keeps going. Compatible with any agent harness.**
+A personal agent with a browser you can take over, files, and tasks that keep running. This repo is the Blueprint. The app is built from [CopilotKit/openmuse](https://github.com/CopilotKit/openmuse) `main`.
 
-Ask for an outcome. Follow the plan, review actions, and come back to the result.
-Built with CopilotKit React Native for iOS, Android, and web.
+<p>
+  <a href="https://render.com/deploy-template/api/github/start?template_repo=openmuse">
+    <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" />
+  </a>
+</p>
 
-[Quick start](#quick-start) · [Demo](#demo) · [Features](#features) · [Architecture](#architecture) · [Docs](docs/README.md) · [Contributing](CONTRIBUTING.md)
-
-[![CI](https://github.com/CopilotKit/OpenMuse/actions/workflows/ci.yml/badge.svg)](https://github.com/CopilotKit/OpenMuse/actions/workflows/ci.yml)
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/render-examples/openmuse)
-
-Clone this template and customize it however you want.
-
-**[Building on OpenMuse? Meet with the CopilotKit team →](https://www.copilotkit.ai/openmuse)**
-
-[![OpenMuse 🪁 — Ask it to browse. Watch the 38-second mobile demo.](assets/demos/2026-09-16/mobile.png)](assets/demos/2026-09-16/mobile.mp4)
-
-**[Watch the mobile demo · 38 seconds](assets/demos/2026-09-16/mobile.mp4)**
-
-[![OpenMuse 🪁 on the web — Watch the 42-second desktop demo.](assets/demos/2026-09-16/web.png)](assets/demos/2026-09-16/web.mp4)
-
-**[Watch the web demo · 42 seconds](assets/demos/2026-09-16/web.mp4)**
+<p>
+  <a href="https://render.com">
+    <img src="https://img.shields.io/badge/Render-Node%20%2B%20Docker-46e3b7?logo=render&logoColor=white" alt="Render" />
+  </a>
+  <a href="https://github.com/CopilotKit/openmuse">
+    <img src="https://img.shields.io/badge/Upstream-OpenMuse-111111?logo=github&logoColor=white" alt="Upstream" />
+  </a>
+  <a href="https://github.com/CopilotKit/openmuse/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT License" />
+  </a>
+</p>
 
 </div>
 
-> **Alpha, for self-hosting and building on.** Open-ended reasoning, live Google accounts, and CopilotKit Rich Threads require their own configuration. See [what is verified](docs/VERIFICATION.md) and the [roadmap](ROADMAP.md).
+![OpenMuse web app](./assets/hero.png)
 
-## Demo
+## What This Template Shows
 
-On iPhone, ask OpenMuse to find interesting stories on Hacker News and summarize CopilotKit. On desktop, ask it to check the school-trip email, open the message, and research exhibits at Monterey Bay Aquarium. The agent shows email and browser results inline. **Take control** opens that same browser session when you need it.
+This repository does not contain the OpenMuse source. Each service sets `repo: https://github.com/CopilotKit/openmuse` and `branch: main`, so Render clones upstream to build. A push to that branch redeploys the services. Plan, disk, and environment changes are commits in this wrapper.
 
-The 38-second iPhone and 42-second desktop web demos show the current interface, framed in 16:9. The send arrow becomes a stop square inside the input pill while the agent replies, then switches back. Stopping keeps your draft intact. See the [recording notes](docs/DEMO.md) for the model setup and reproduction steps.
-
-[Mobile MP4](assets/demos/2026-09-16/mobile.mp4) · [Web MP4](assets/demos/2026-09-16/web.mp4) · [Recording details and reproduction](docs/DEMO.md)
-
-The [Jev aquarium-trip demo](docs/demos/jev-generative-ui.md) walks through a fictional school email, clarification choices, sourced exhibit cards, hands-on preference refinement, and a confirmed selection. [Watch the 83-second live Jev recording](assets/demos/2026-09-23/jev-live-web.mp4), where TypeSafe Jev makes the decisions and a scripted agent keeps the trip scenario repeatable. A [scripted-decision sample recording](assets/demos/2026-09-23/jev-web.mp4) is also available.
-
-## What it is
-
-OpenMuse is a personal-agent application with an agent computer, visible work, and rich results. It runs its own server, task worker, and browser worker. You can inspect and change the source under the MIT license.
-
-The computer combines **persistent Chromium and an optional Linux workspace**. The agent can browse public pages, run commands in its own container, work with files, and move PDFs between the computer and the app. You can open its browser or terminal and continue the work. Graphical desktops and autonomous checkout remain future work.
-
-## Features
-
-| Surface | What runs in this alpha |
+| Piece | Role |
 | --- | --- |
-| **Chat** | CopilotKit headless chat with streamed AG-UI events, mailbox search and reading, send/stop in one input pill, a visible follow-up queue, retained drafts, delegated tasks, and inline email, browser, PDF, plan, and finance cards. |
-| **Agent computer** | Persistent browser profiles and takeover console; optional isolated Linux terminal, saved command receipts, editable workspace files, and PDF transfer. |
-| **Activity** | Durable task plans, progress, input requests, pause/resume/cancel/retry, approvals, and saved receipts. SQL leases recover interrupted work. |
-| **Ideas** | Suggestions with source evidence; edit, accept, or dismiss. Sent replies and completed matching work are excluded. |
-| **Goals & Tracking** | Goals and milestones; recurring public-page checks for changes, text availability, or USD price thresholds, with deduplicated alerts and failure backoff. |
-| **Documents** | Email attachment → PDF → requested form values → filled copy → reviewed reply → receipt. Native/web PDF viewing, paging, zoom, supported fields, and sharing. |
-| **Finance** | Import transaction CSV to create a spending summary with categories, transactions, and a savings-goal action. |
-| **Gmail & Calendar** | Google OAuth adapters, complete mail threads, drafts/attachments, calendar discovery, and reviewed event creation/update/deletion. Live credentials required. |
-| **Personal context** | Editable name, tone, avatar, and memories. Background-update preferences and durable in-app notifications. |
-| **Rich Threads** | CopilotKit Intelligence persistence in every mode, with a stable main conversation, side chats, renaming, archiving, restoring, and replay. A server-only project key is required. |
-
-The [feature inventory](docs/FEATURES.md) describes implemented capabilities and planned extensions. Health/bank/social connectors, device push, voice, generated executable tools, and automatic reservations/payments are on the [roadmap](ROADMAP.md).
-
-## Quick start
-
-**Requirements:** Node 24 LTS, pnpm 11.19.0, and a CopilotKit Intelligence project key. The local sample app needs no model, Google account, or Docker.
-
-```sh
-git clone https://github.com/CopilotKit/OpenMuse.git openmuse
-cd openmuse
-pnpm install --frozen-lockfile
-cp .env.example .env
-npx copilotkit@latest login
-npx copilotkit@latest project select
-# Set CPK_INTELLIGENCE_API_KEY in .env to the generated server-only project key.
-pnpm dev
-```
-
-In another terminal:
-
-```sh
-pnpm dev:web
-```
-
-Open [localhost:8081](http://localhost:8081). The API runs at [localhost:8787/api/health](http://localhost:8787/api/health).
-
-### Try it
-
-1. In Chat, send **“Complete the permission slip”**. Open the task, supply fictional form values, inspect the saved PDF, and review the prepared reply. This writes only to the local mailbox.
-2. In **Goals → Track**, create a built-in availability watch, then change the built-in test page to trigger an alert.
-3. In **Menu → Delegate task → Finance**, use **Try example transactions** to create an interactive spending tracker.
-4. Start the [browser worker](#browser-worker) and configure a model, then ask **“Check out Hacker News for cool stuff”** or **“Summarize copilotkit.ai”**. Follow the browser inline and use **Take control** to open its session. For a model-free version of this flow, follow the [AI Mock demo setup](docs/DEMO.md#run-the-agent-browser-demo).
-
-For iOS or Android, use `pnpm --dir apps/mobile ios` or `pnpm --dir apps/mobile android`. Xcode or Android tooling is required. The PDF reader needs an Expo development build; use [native setup](apps/mobile/README.md).
-
-## Deploy on Render
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/render-examples/openmuse)
-
-[render.yaml](render.yaml) deploys three services: the API, the web app, and a private browser. The API answers `/` with JSON, so the UI is its own static site.
-
-### First run
-
-1. Click **Deploy to Render**. Wait until `openmuse-api`, `openmuse-web`, and `openmuse-browser` are live.
-2. On `openmuse-api`, open **Environment** and copy `OPENMUSE_ACCESS_KEY`.
-3. Open the `openmuse-web` URL and sign in with that key.
-4. Send a message.
-
-The deploy form asks for two values you provide. Render generates the other two.
-
-| Variable | Set by | If it is missing |
-|---|---|---|
-| `CPK_INTELLIGENCE_API_KEY` | You. Run `npx copilotkit@latest login`, then `npx copilotkit@latest project select`. Keep it on the server. | Chat cannot open a thread. |
-| `OPENAI_API_KEY` | You. Used by the default `openai/gpt-5`. Change `MODEL` and supply the matching provider key for Anthropic or Google. | The model call fails. |
-| `OPENMUSE_ACCESS_KEY` | Render | You cannot sign in. |
-| `TOKEN_ENCRYPTION_KEY` | Render | The API refuses to start in live mode. |
-
-Health check: `https://<openmuse-api>/api/health`.
-
-### Services
-
-| Service | Plan | What it runs |
-|---|---|---|
-| `openmuse-api` | Standard, with a 1 GB disk at `/var/data` | The Hono API and the in-process task worker. `DATA_DIR` is `/var/data/openmuse`. |
-| `openmuse-web` | Static site | The Expo web export. `EXPO_PUBLIC_API_URL` is baked in at build time. |
-| `openmuse-browser` | Private service, Standard, 1 GB disk at `/data` | Playwright and Chromium. The API calls it on the private network. |
-
-**Standard** is the smallest plan that stays up. At 512 MB the process runs out of memory before it binds a port, because PGlite loads an embedded Postgres build.
-
-**The disk** holds the database, PDFs, and the signing key. A redeploy without it wipes that data. Chat threads are stored by CopilotKit Intelligence, so a thread can still load after you sign back in even when the disk was never attached.
-
-**Live mode** is required. Render binds `0.0.0.0`, and sample mode rejects any host that is not loopback. The Blueprint sets `WORKSPACE_MODE=live`.
-
-**Browsing is included, and you can take it out.** `openmuse-browser` is a private service, so it has no public URL. The API reaches it at `http://openmuse-browser:8790` with a token Render generates. If the private hostname is not `openmuse-browser`, set `BROWSER_WORKER_URL` to `http://<that-host>:8790`. To deploy without it, delete the `openmuse-browser` service and the `BROWSER_WORKER_URL` and `WORKER_TOKEN` entries on `openmuse-api`. Chat, drafts, and tasks still run. Page reads, screenshots, and **Take control** do not.
-
-The Docker computer and Google mail or calendar need the setup in the sections below. This Blueprint does not start them.
-
-## Configure the agent and Google
-
-Copy the commented settings in [.env.example](.env.example) into your private `.env`:
-
-1. Set `AGENT_BACKEND=model`, `MODEL=provider/model-id`, and the matching provider key. CopilotKit supports the configured OpenAI, Anthropic or Google provider. Fictional data can still be used with a real model. Provider keys stay on the server.
-2. Create or select a CopilotKit Intelligence project with `npx copilotkit@latest login` and `npx copilotkit@latest project select`. Keep the generated `CPK_INTELLIGENCE_API_KEY` on the server.
-3. For personal mail/calendar, set `WORKSPACE_MODE=live`, the generated `CPK_INTELLIGENCE_API_KEY`, a random `OPENMUSE_ACCESS_KEY` of at least 24 characters, and `TOKEN_ENCRYPTION_KEY` containing 32 random bytes encoded as base64. Restart the API.
-4. Configure a Google OAuth web client with Gmail and Calendar APIs enabled. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`; register `${PUBLIC_API_URL}/api/google/callback` as its redirect URI. Configure consent/test-user access in your Google project.
-5. Open **Apps → Gmail** (or **Google Calendar**), connect read access, and grant write access when needed. Every send or calendar change still requires its own stored review. Changing/disconnecting the account invalidates pending connection-bound work.
-
-Google credentials are encrypted at rest. File URLs and browser consoles use short-lived signatures. This deployment uses one owner protected by a shared access key; it is not a multi-tenant authentication system. Use HTTPS and restricted network access for a remote host. Keep the default local-data mode on loopback.
-
-## Browser worker
-
-Set `BROWSER_WORKER_URL=http://127.0.0.1:8790` and a random `WORKER_TOKEN` of at least 32 characters in `.env`.
-
-```sh
-pnpm --dir apps/worker exec playwright install chromium
-pnpm dev:browser
-```
-
-Or use `docker compose --env-file .env -f infra/compose.yaml up --build -d`. The same token must reach the API and worker. Sessions have persistent Chromium profiles; the app can open a live screenshot console and import PDF downloads. Agent tools can read public pages and hand interactive work to the person. [Worker setup and boundaries](apps/worker/README.md).
-
-## Persistence and operation
-
-### Linux terminal and workspace
-
-Build the computer image, enable it on the API, then open **Computer → Terminal → Start computer**:
-
-```sh
-docker build -t openmuse-computer:local apps/computer
-COMPUTER_ENABLED=true pnpm dev
-```
-
-The API needs access to the Docker CLI and engine. Commands run in a nonroot container with no host-directory mounts or credentials. A named `/workspace` volume retains files when stopped. Terminal networking is disabled; public web access uses the browser worker. Commands have a 30-second limit and saved output/exit receipts. **Files** supports folders, text editing, and PDF transfer to/from Documents. This is a Linux container, not a full operating-system VM. [Setup, Colima option, and boundaries](docs/COMPUTER.md).
-
-### Application storage
-
-By default, embedded PGlite, documents and the signing key live in `.openmuse/`; browser profiles live in `.openmuse/browser-profiles/`. Keep that directory private and back it up. The API hosts the task worker. The host must remain running for background work.
-
-For a separate task worker, configure the same `DATABASE_URL`, secrets and shared `DATA_DIR` for both processes, then set `TASK_WORKER_ENABLED=false` on the API and run `pnpm dev:worker`. PGlite cannot be opened by separate processes. Production commands are `pnpm build:server`, `pnpm start` and `pnpm start:worker`. Run one API instance; task workers coordinate through SQL leases.
-
-No hidden retry occurs after an uncertain external write. Review its provider outcome before creating a replacement. Pausing/cancelling prevents subsequent task steps; an already approved in-flight provider request may finish.
-
-## CopilotKit Rich Threads
-
-Every deployment requires `CPK_INTELLIGENCE_API_KEY` on the API server for CopilotKit Intelligence conversation persistence and replay. Create or select a project with `npx copilotkit@latest login` and `npx copilotkit@latest project select`, set the generated server-only key, and restart the API. The native menu uses `useThreads`; rich tool results link back to saved tasks, documents, and browser sessions.
-
-Intelligence is a separate service and is not included in this repository's MIT license. No project key is shipped. [Configuration and validation boundaries](docs/RICH-THREADS.md).
+| **[OpenMuse](https://github.com/CopilotKit/openmuse)** | MIT app: Hono API, Expo web UI, Playwright worker. Built from `main`. |
+| **[Render Web Service](https://render.com/docs/web-services)** | `openmuse-api` on the Node runtime. In-process task worker. PGlite on a disk. |
+| **[Render Static Site](https://render.com/docs/static-sites)** | `openmuse-web`. Expo web export from the same upstream repo. |
+| **[Render Private Service](https://render.com/docs/private-services)** | `openmuse-browser`. Chromium from `apps/worker/Dockerfile`. No public URL. |
+| **[Persistent disks](https://render.com/docs/disks)** | Workspace database, PDFs, and signing key on the API. Browser profiles on the worker. |
 
 ## Architecture
 
 ```mermaid
-flowchart TD
-  Client[Expo / React Native / Web] -->|AG-UI and authenticated API| API[Hono + CopilotKit runtime]
-  API --> Tasks[Durable task worker]
-  API --> Threads[CopilotKit Intelligence required in every mode]
-  API --> Store[(PGlite or PostgreSQL)]
-  Tasks --> Store
-  Tasks --> Review[Stored action review]
-  Review --> Google[Gmail / Calendar adapters]
-  Tasks --> Browser[Chromium worker + persistent profiles]
-  API --> Browser
-  API --> Computer[Optional Docker Linux computer]
-  Tasks --> Computer
-  Computer --> Volume[(Persistent workspace volume)]
-  Tasks --> Files[PDF files + structured artifacts]
-  API -. future adapter .-> OpenBot[OpenBot]
+flowchart LR
+  user["Browser"] --> web["openmuse-web"]
+  web --> api["openmuse-api"]
+  api --> disk[("openmuse-data")]
+  api --> browser["openmuse-browser"]
+  browser --> profiles[("browser profiles")]
+  api --> intel["CopilotKit Intelligence"]
+  upstream["CopilotKit/openmuse main"] --> api
+  upstream --> web
+  upstream --> browser
 ```
 
-| Directory | Purpose |
+### How It Works
+
+1. Click **Deploy to Render**. The flow forks this wrapper into your GitHub account and applies [`render.yaml`](./render.yaml).
+2. On Apply, set `CPK_INTELLIGENCE_API_KEY` and `OPENAI_API_KEY`. Render generates the access key, the encryption key, and the browser token.
+3. Render clones `CopilotKit/openmuse` at `main` for the API, the static export, and the browser image.
+4. Open the `openmuse-web` URL and sign in with `OPENMUSE_ACCESS_KEY` from the API service.
+5. Later commits on upstream `main` redeploy those three services. Editing this wrapper changes the Blueprint, not the app source.
+
+| Resource | Type | Plan | Notes |
+| --- | --- | --- | --- |
+| `openmuse-api` | Web, Node | Standard | Disk at `/var/data`, 1 GB. Health: `/api/health`. Single instance. |
+| `openmuse-web` | Static | Free | Publish path `apps/mobile/dist/web` in the upstream repo. |
+| `openmuse-browser` | Private, Docker | Standard | `apps/worker/Dockerfile`. Listens on 8790. Disk at `/data`, 1 GB. |
+
+Default region: **Oregon**. Both disks are single-instance. The Linux computer in `apps/computer` is not in this Blueprint: it needs a Docker engine beside the API.
+
+## Quick Start
+
+### Prerequisites
+
+- A [Render account](https://dashboard.render.com/register?utm_source=github&utm_medium=referral&utm_campaign=ojus_demos&utm_content=readme_link)
+- A CopilotKit Intelligence project key: `npx copilotkit@latest login`, then `npx copilotkit@latest project select`
+- An OpenAI API key if you leave `MODEL=openai/gpt-5`
+
+### Deploy
+
+1. Click **Deploy to Render** above.
+2. Fill in `CPK_INTELLIGENCE_API_KEY` and `OPENAI_API_KEY`.
+3. Wait until `openmuse-api`, `openmuse-web`, and `openmuse-browser` are **Live**.
+4. Copy `OPENMUSE_ACCESS_KEY` from `openmuse-api` and sign in on the static site.
+
+```bash
+curl -fsS "https://<openmuse-api>.onrender.com/api/health"
+```
+
+The API origin returns JSON. The web app is the static site.
+
+## Features
+
+| Feature | Description |
 | --- | --- |
-| `apps/mobile` | Shared iOS, Android, and web UI with CopilotKit headless hooks. |
-| `apps/server` | API, CopilotKit runtime, identity boundary, task engine, reviews, files, and persistence. |
-| `apps/worker` | Token-protected Playwright browser service with persistent profiles. |
-| `apps/computer` | Nonroot Linux image, bounded filesystem helper, and real container verification. |
-| `packages/domain` | Shared types and request validation. |
-| `packages/integrations` | Google and browser protocol adapters. |
-| `packages/backends` | Optional OpenBot HTTP adapter and its identity boundary. |
-| `tests` | Workflow, runtime, persistence, provider-contract, and authorization tests. |
+| **Chat** | CopilotKit headless chat. One access key for the workspace. |
+| **Tasks** | Plans, pause, resume, cancel, retry, and approvals. |
+| **Browser** | Persistent Chromium profiles. **Take control** opens the same session. |
+| **Documents** | PDFs on the API disk. |
+| **Upstream builds** | Services track `CopilotKit/openmuse` `main` without copying that repo here. |
 
-### OpenBot compatibility
+This deployment is one owner behind a shared access key.
 
-OpenMuse's native client and personal-agent workflows are independent of OpenBot. The disabled OpenBot adapter is pinned and contract-tested against upstream interfaces. Live user/session bridging, routine mapping, and computer backend wiring remain future work. OpenBot's Intelligence runtime is not a raw AG-UI endpoint. [Integration contract](docs/OPENBOT-INTEGRATION.md).
+## Configuration
 
-## Development
+| Variable | Source | Description |
+| --- | --- | --- |
+| `CPK_INTELLIGENCE_API_KEY` | Required | Server-only CopilotKit Intelligence key. |
+| `OPENAI_API_KEY` | Required | Used by `MODEL=openai/gpt-5`. |
+| `OPENMUSE_ACCESS_KEY` | Auto-generated | Sign-in secret. |
+| `TOKEN_ENCRYPTION_KEY` | Auto-generated | 32-byte base64 key. Do not rotate it after Google tokens are stored. |
+| `WORKER_TOKEN` | Auto-generated | Shared by the API and the browser worker. |
+| `BROWSER_WORKER_URL` | Blueprint | `http://openmuse-browser:8790`. |
+| `PUBLIC_API_URL` | Wired | API `RENDER_EXTERNAL_URL`. |
+| `ALLOWED_ORIGINS` | Wired | Static site origin. |
+| `EXPO_PUBLIC_API_URL` | Wired | Baked into the web bundle at build time. |
+| `NODE_VERSION` | Blueprint | `24` on the API and the static build. |
+| `GOOGLE_CLIENT_ID` | Optional | Add on `openmuse-api` with `GOOGLE_CLIENT_SECRET`. Redirect: `${PUBLIC_API_URL}/api/google/callback`. |
 
-```sh
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build:server
-pnpm build:web
-pnpm build:ios
-pnpm build:android
-pnpm --dir apps/worker typecheck
-pnpm test:browser
-pnpm test:computer
+`generateValue` runs once, on the first Blueprint apply.
+
+## Cost
+
+Prices from [Render's pricing page](https://render.com/pricing). CopilotKit Intelligence and the model provider bill separately.
+
+| Resource | Approx. monthly |
+| --- | ---: |
+| `openmuse-api` (Standard, 2 GB) | $25 |
+| `openmuse-browser` (Standard, 2 GB) | $25 |
+| `openmuse-web` (static) | $0 |
+| Two 1 GB disks | $0.50 |
+| **Total** | **~$50.50** |
+
+Standard is the floor for both compute services. Starter (512 MB) OOM-kills the API during PGlite startup.
+
+## Troubleshooting
+
+| Problem | Solution |
+| --- | --- |
+| `No open ports` / heap OOM on the API | Stay on Standard. Starter is too small for PGlite. |
+| Health check fails on the API | `GET /api/health`. Confirm `CPK_INTELLIGENCE_API_KEY` is set. |
+| Browser service never opens a port | It listens on **8790**, not `$PORT`. `WORKER_HOST` must stay `0.0.0.0`. |
+| Web app calls the wrong host | `EXPO_PUBLIC_API_URL` is fixed at export time. Redeploy `openmuse-web` after the API URL exists. |
+| Upstream fix is not running | Services build `CopilotKit/openmuse` `main`. Confirm that branch has the commit, then check the service deploy, not this wrapper's history. |
+
+## Project Structure
+
+```
+render.yaml       Blueprint. Service repos point at CopilotKit/openmuse.
+README.md         This file
+LICENSE           Wrapper license
+.env.example      The two secrets the deploy form asks for
+assets/hero.png   Upstream web demo still
 ```
 
-Platform build scripts export JavaScript/Hermes bundles; they do not produce signed app binaries. Browser checks require installed Chromium and public fixture access. CI also exercises the browser and Linux computer containers. See [contribution guidance](CONTRIBUTING.md) and [verification results](docs/VERIFICATION.md).
+## Learn More
 
-## Contributing and license
+**Render:**
 
-Issues and pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), [ROADMAP.md](ROADMAP.md), and the [security policy](SECURITY.md).
+- [Blueprint spec](https://render.com/docs/blueprint-spec) (`repo` selects the Git repository to build)
+- [Private network](https://render.com/docs/private-network)
+- [Persistent disks](https://render.com/docs/disks)
 
-MIT licensed. Built by CopilotKit. Its original interface and fictional assets are included. Website, email, and document content supplies evidence, not permission to act.
+**Upstream:**
+
+- [OpenMuse](https://github.com/CopilotKit/openmuse)
+- [CopilotKit Intelligence](https://docs.copilotkit.ai/intelligence/connect-your-runtime)
+
+## License
+
+[MIT](LICENSE) for this wrapper.
+
+Upstream [OpenMuse](https://github.com/CopilotKit/openmuse) is MIT. CopilotKit Intelligence is a separate service and is not covered by that license.

@@ -1,97 +1,120 @@
-services:
-  - type: web
-    name: openmuse-api
-    runtime: node
-    # starter (512 MB) gets OOM-killed before the server binds a port, because
-    # the default PGlite store loads an embedded Postgres WASM build.
-    plan: standard
-    # No corepack: Render preinstalls pnpm at /usr/bin and /usr is read-only, so
-    # `corepack enable` dies with EROFS. Render's pnpm honors packageManager.
-    buildCommand: pnpm install --frozen-lockfile && pnpm build:server
-    startCommand: pnpm start
-    healthCheckPath: /api/health
-    disk:
-      name: openmuse-data
-      mountPath: /var/data
-      sizeGB: 1
-    envVars:
-      # HOST must be 0.0.0.0 on Render, and OpenMuse only allows that in live mode.
-      - key: HOST
-        value: 0.0.0.0
-      - key: WORKSPACE_MODE
-        value: live
-      - key: AGENT_BACKEND
-        value: model
-      - key: MODEL
-        value: openai/gpt-5
-      - key: DATA_DIR
-        value: /var/data/openmuse
-      - key: TASK_WORKER_ENABLED
-        value: true
-      - key: PUBLIC_API_URL
-        fromService:
-          name: openmuse-api
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
-      - key: ALLOWED_ORIGINS
-        fromService:
-          name: openmuse-web
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
-      - key: OPENMUSE_ACCESS_KEY
-        generateValue: true
-      - key: TOKEN_ENCRYPTION_KEY
-        generateValue: true
-      - key: OPENAI_API_KEY
-        sync: false
-      - key: CPK_INTELLIGENCE_API_KEY
-        sync: false
-      # Delete these two entries, and the openmuse-browser service below, to
-      # deploy without browsing. The API boots either way.
-      - key: BROWSER_WORKER_URL
-        value: http://openmuse-browser:8790
-      - key: WORKER_TOKEN
-        fromService:
-          name: openmuse-browser
-          type: pserv
-          envVarKey: WORKER_TOKEN
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+#
+# OpenMuse wrapper. This repo does not contain the app.
+# Every service builds from CopilotKit/openmuse main, so an upstream
+# push redeploys the service. Blueprint changes live here.
+# Upstream: https://github.com/CopilotKit/openmuse
 
-  # Private Chromium for page reads, screenshots, and Take control.
-  # Remove this service to skip it. The image listens on 8790, not $PORT.
-  - type: pserv
-    name: openmuse-browser
-    runtime: docker
-    plan: standard
-    dockerfilePath: ./apps/worker/Dockerfile
-    dockerContext: ./apps/worker
-    disk:
-      name: openmuse-browser-data
-      mountPath: /data
-      sizeGB: 1
-    envVars:
-      - key: WORKER_TOKEN
-        generateValue: true
-      - key: WORKER_HOST
-        value: 0.0.0.0
-      - key: WORKER_DATA_DIR
-        value: /data
+previews:
+  generation: off
 
-  - type: web
-    name: openmuse-web
-    runtime: static
-    # --clear avoids a cached Metro transform keeping a stale EXPO_PUBLIC_API_URL,
-    # which Expo inlines into the bundle at build time.
-    buildCommand: >-
-      pnpm install --frozen-lockfile &&
-      pnpm --dir apps/mobile exec expo export --platform web --output-dir dist/web --clear
-    staticPublishPath: apps/mobile/dist/web
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: EXPO_PUBLIC_API_URL
-        fromService:
-          name: openmuse-api
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
+projects:
+  - name: openmuse
+    environments:
+      - name: production
+        services:
+          - type: web
+            name: openmuse-api
+            runtime: node
+            repo: https://github.com/CopilotKit/openmuse
+            branch: main
+            # starter (512 MB) gets OOM-killed before the server binds a port,
+            # because the default PGlite store loads an embedded Postgres build.
+            plan: standard
+            region: oregon
+            numInstances: 1
+            buildCommand: pnpm install --frozen-lockfile && pnpm build:server
+            startCommand: pnpm start
+            healthCheckPath: /api/health
+            disk:
+              name: openmuse-data
+              mountPath: /var/data
+              sizeGB: 1
+            envVars:
+              - key: NODE_VERSION
+                value: "24"
+              - key: HOST
+                value: 0.0.0.0
+              - key: WORKSPACE_MODE
+                value: live
+              - key: AGENT_BACKEND
+                value: model
+              - key: MODEL
+                value: openai/gpt-5
+              - key: DATA_DIR
+                value: /var/data/openmuse
+              - key: TASK_WORKER_ENABLED
+                value: "true"
+              # No corepack: Render preinstalls pnpm and /usr is read-only.
+              # Render's pnpm honors packageManager in the upstream repo.
+              - key: PUBLIC_API_URL
+                fromService:
+                  name: openmuse-api
+                  type: web
+                  envVarKey: RENDER_EXTERNAL_URL
+              - key: ALLOWED_ORIGINS
+                fromService:
+                  name: openmuse-web
+                  type: web
+                  envVarKey: RENDER_EXTERNAL_URL
+              - key: OPENMUSE_ACCESS_KEY
+                generateValue: true
+              - key: TOKEN_ENCRYPTION_KEY
+                generateValue: true
+              - key: OPENAI_API_KEY
+                sync: false
+              - key: CPK_INTELLIGENCE_API_KEY
+                sync: false
+              # Delete these two entries, and openmuse-browser, to skip browsing.
+              - key: BROWSER_WORKER_URL
+                value: http://openmuse-browser:8790
+              - key: WORKER_TOKEN
+                fromService:
+                  name: openmuse-browser
+                  type: pserv
+                  envVarKey: WORKER_TOKEN
+
+          # Private Chromium. The process listens on 8790, not $PORT.
+          - type: pserv
+            name: openmuse-browser
+            runtime: docker
+            repo: https://github.com/CopilotKit/openmuse
+            branch: main
+            plan: standard
+            region: oregon
+            numInstances: 1
+            dockerfilePath: ./apps/worker/Dockerfile
+            dockerContext: ./apps/worker
+            disk:
+              name: openmuse-browser-data
+              mountPath: /data
+              sizeGB: 1
+            envVars:
+              - key: WORKER_TOKEN
+                generateValue: true
+              - key: WORKER_HOST
+                value: 0.0.0.0
+              - key: WORKER_DATA_DIR
+                value: /data
+
+          - type: web
+            name: openmuse-web
+            runtime: static
+            repo: https://github.com/CopilotKit/openmuse
+            branch: main
+            buildCommand: >-
+              pnpm install --frozen-lockfile &&
+              pnpm --dir apps/mobile exec expo export --platform web --output-dir dist/web --clear
+            staticPublishPath: apps/mobile/dist/web
+            routes:
+              - type: rewrite
+                source: /*
+                destination: /index.html
+            envVars:
+              - key: NODE_VERSION
+                value: "24"
+              - key: EXPO_PUBLIC_API_URL
+                fromService:
+                  name: openmuse-api
+                  type: web
+                  envVarKey: RENDER_EXTERNAL_URL
